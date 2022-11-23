@@ -16,9 +16,4 @@ public class Usuario {
     private int idade;
 
     public Usuario() {}
-
-    public Usuario(String nome, int idade) {
-        this.idade = idade;
-        this.nome = nome;
-    }
 }

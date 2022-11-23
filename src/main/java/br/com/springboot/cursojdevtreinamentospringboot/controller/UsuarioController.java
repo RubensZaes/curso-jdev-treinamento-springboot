@@ -21,16 +21,19 @@ public class UsuarioController {
     public Page<UsuarioDTO> listarUsuarios(@PageableDefault(size = 10, page = 0, sort = {"id"}) Pageable pageable) {
         return usuarioRepository.findAll(pageable).map(UsuarioDTO::new);
     }
-
     @GetMapping("buscarporid")
     public Usuario buscarUsuario(@RequestParam(name = "idUser") Long idUser){
        return usuarioRepository.findById(idUser).get();
     }
-
     @PostMapping("cadastrarusuario")
     @Transactional
     public void cadastrarUsuario(@RequestBody Usuario usuario) {
-        usuarioRepository.save(new Usuario(usuario.getNome(), usuario.getIdade()));
+        usuarioRepository.save(usuario);
+    }
+    @PutMapping("atualizar")
+    @Transactional
+    public void atualizarUsuario(@RequestBody Usuario usuario){
+        usuarioRepository.saveAndFlush(usuario);
     }
     @DeleteMapping("delete")
     @Transactional
