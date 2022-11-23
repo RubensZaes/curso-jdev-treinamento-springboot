@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,22 +24,36 @@ public class UsuarioController {
         return usuarioRepository.findAll(pageable).map(UsuarioDTO::new);
     }
     @GetMapping("buscarporid")
-    public Usuario buscarUsuario(@RequestParam(name = "idUser") Long idUser){
-       return usuarioRepository.findById(idUser).get();
+    public ResponseEntity<?> buscarUsuario(@RequestParam(name = "idUser") Long idUser){
+        var usuario = usuarioRepository.findById(idUser).orElse(null);
+        if (usuario != null) {
+            return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
     }
     @PostMapping("cadastrarusuario")
     @Transactional
-    public void cadastrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) {
         usuarioRepository.save(usuario);
+        return new ResponseEntity<Usuario>(usuario, HttpStatus.CREATED);
     }
     @PutMapping("atualizar")
     @Transactional
-    public void atualizarUsuario(@RequestBody Usuario usuario){
-        usuarioRepository.saveAndFlush(usuario);
+    public ResponseEntity<?> atualizarUsuario(@RequestBody Usuario usuario){
+        if (usuario.getId() != null) {
+            usuarioRepository.saveAndFlush(usuario);
+            return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("Id não informado pra atualização.", HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("delete")
     @Transactional
-    public void deletarUsuario(@RequestParam Long idUser){
-        usuarioRepository.deleteById(idUser);
+    public ResponseEntity<String> deletarUsuario(@RequestParam Long idUser){
+        var usuario = usuarioRepository.findById(idUser).orElse(null);
+        if (usuario != null) {
+            usuarioRepository.deleteById(idUser);
+            return new ResponseEntity<String>("Usuaário deletado com sucesso.", HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
     }
 }
