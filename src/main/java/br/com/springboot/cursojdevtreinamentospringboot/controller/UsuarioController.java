@@ -27,4 +27,9 @@ public class UsuarioController {
     public void cadastrarUsuario(@RequestBody Usuario usuario) {
         usuarioRepository.save(new Usuario(usuario.getNome(), usuario.getIdade()));
     }
+    @DeleteMapping("{id}")
+    @Transactional
+    public void deletarUsuario(@RequestParam Long idUser){
+        usuarioRepository.deleteById(idUser);
+    }
 }
