@@ -22,12 +22,17 @@ public class UsuarioController {
         return usuarioRepository.findAll(pageable).map(UsuarioDTO::new);
     }
 
+    @GetMapping("buscarporid")
+    public Usuario buscarUsuario(@RequestParam(name = "idUser") Long idUser){
+       return usuarioRepository.findById(idUser).get();
+    }
+
     @PostMapping("cadastrarusuario")
     @Transactional
     public void cadastrarUsuario(@RequestBody Usuario usuario) {
         usuarioRepository.save(new Usuario(usuario.getNome(), usuario.getIdade()));
     }
-    @DeleteMapping("{id}")
+    @DeleteMapping("delete")
     @Transactional
     public void deletarUsuario(@RequestParam Long idUser){
         usuarioRepository.deleteById(idUser);
