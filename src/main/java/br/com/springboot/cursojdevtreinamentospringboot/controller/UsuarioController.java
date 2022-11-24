@@ -32,8 +32,12 @@ public class UsuarioController {
     }
     @GetMapping("buscarPorNome")
     public ResponseEntity<?> buscarPorNome(@RequestParam(name = "name") String name, Pageable pageable){
-        var usuario = usuarioService.buscarPorNome(name, pageable);
-        return usuario.getTotalElements() != 0 ? new ResponseEntity<>(usuario, HttpStatus.OK) : new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
+        name = name.trim();
+        if ((name.trim()).length() > 0) {
+            var usuario = usuarioService.buscarPorNome(name, pageable);
+            return usuario.getTotalElements() != 0 ? new ResponseEntity<>(usuario, HttpStatus.OK) : new ResponseEntity<>("Nenhum usuário não encontrado.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Campo nome vazio.", HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("cadastrarusuario")

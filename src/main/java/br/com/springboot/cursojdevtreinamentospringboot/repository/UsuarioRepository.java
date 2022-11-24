@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Page<Usuario> findAll(Pageable pageable);
-    @Query(value = "SELECT u FROM Usuario u WHERE u.nome LIKE %?1%")
+    @Query(value = "SELECT u FROM Usuario u WHERE TRIM(u.nome) LIKE %?1%")
     Page<Usuario> findUsuarioByNomeIgnoreCase(String name, Pageable pageable);
 }
