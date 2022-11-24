@@ -6,8 +6,10 @@ import br.com.springboot.cursojdevtreinamentospringboot.repository.UsuarioReposi
 import br.com.springboot.cursojdevtreinamentospringboot.utils.ResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +24,19 @@ public class UsuarioService {
 
     public ResponseModel<UsuarioDTO> listarUsuarios(Pageable pageable) {
         Page<UsuarioDTO> usuarios = usuarioRepository.findAll(pageable).map(UsuarioDTO::new);
-        return returnResponseModel(usuarios);
+        return getUsuarioDTOResponseModel(usuarios);
     }
     public ResponseModel<UsuarioDTO> buscarPorNome(String name, Pageable pageable) {
         Page<UsuarioDTO> usuarios = usuarioRepository.findUsuarioByNomeIgnoreCase(name, pageable).map(UsuarioDTO::new);
-        return returnResponseModel(usuarios);
+        return getUsuarioDTOResponseModel(usuarios);
+    }
+
+    private static ResponseModel<UsuarioDTO> getUsuarioDTOResponseModel(Page<UsuarioDTO> usuarios) {
+        ResponseModel<UsuarioDTO> responseModel = new ResponseModel<>(HttpStatus.OK.name());
+        responseModel.setList(usuarios.getContent());
+        responseModel.setTotalElements(usuarios.getTotalElements());
+        responseModel.setTotalPages(usuarios.getTotalPages());
+        return responseModel;
     }
 
     public Optional<Usuario> buscarUsuario(Long id) {
@@ -45,11 +55,4 @@ public class UsuarioService {
         usuarioRepository.deleteById(idUser);
     }
 
-    public ResponseModel returnResponseModel(Page<UsuarioDTO> usuarios){
-        ResponseModel<UsuarioDTO> responseModel = new ResponseModel<>(HttpStatus.OK.name());
-        responseModel.setList(usuarios.getContent());
-        responseModel.setTotalElements(usuarios.getTotalElements());
-        responseModel.setTotalPages(usuarios.getTotalPages());
-        return responseModel;
-    }
 }
