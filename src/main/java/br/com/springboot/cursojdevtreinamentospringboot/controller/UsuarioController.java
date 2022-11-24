@@ -5,14 +5,10 @@ import br.com.springboot.cursojdevtreinamentospringboot.model.Usuario;
 import br.com.springboot.cursojdevtreinamentospringboot.repository.UsuarioRepository;
 import br.com.springboot.cursojdevtreinamentospringboot.service.UsuarioService;
 import br.com.springboot.cursojdevtreinamentospringboot.utils.ResponseModel;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -20,9 +16,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping
 public class UsuarioController {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -36,6 +29,11 @@ public class UsuarioController {
     public ResponseEntity<?> buscarUsuario(@RequestParam(name = "idUser") Long idUser){
         var usuario = usuarioService.buscarUsuario(idUser).orElse(null);
         return Objects.nonNull(usuario) ? new ResponseEntity<>(usuario, HttpStatus.OK) : new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("buscarPorNome")
+    public ResponseEntity<?> buscarPorNome(@RequestParam(name = "name") String name, Pageable pageable){
+        var usuario = usuarioService.buscarPorNome(name, pageable);
+        return usuario.getTotalElements() != 0 ? new ResponseEntity<>(usuario, HttpStatus.OK) : new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("cadastrarusuario")
